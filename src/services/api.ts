@@ -235,12 +235,25 @@ export const api = {
       return response.json();
     },
 
-    delete: async (paintingId: number): Promise<void> => {
-      const response = await fetch(`${API_BASE_URL}/paintings/${paintingId}`, {
+    delete: async (paintingId: number, artistId: number): Promise<void> => {
+      console.log('Deleting painting with ID:', paintingId, 'by artist:', artistId);
+      console.log('Auth headers:', getAuthHeaders());
+      
+      const response = await fetch(`${API_BASE_URL}/paintings/${paintingId}?artist_id=${artistId}`, {
         method: 'DELETE',
         headers: getAuthHeaders(),
       });
-      if (!response.ok) throw new Error(`Failed to delete painting: ${response.statusText}`);
+      
+      console.log('Delete response status:', response.status);
+      console.log('Delete response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Delete error response:', errorText);
+        throw new Error(`Failed to delete painting: ${response.statusText} - ${errorText}`);
+      }
+      
+      console.log('Painting deleted successfully');
     },
   },
 
